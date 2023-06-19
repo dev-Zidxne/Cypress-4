@@ -16,6 +16,8 @@ describe('share location', () => {
 			cy.stub(win.navigator.clipboard, 'writeText')
 				.as('saveToClipboard')
 				.resolves();
+			cy.spy(win.localStorage, 'setItem').as('storeLocation');
+			cy.spy(win.localStorage, 'getItem').as('getStoredLocation');
 		});
 	});
 	it('should fetch the user location', () => {
@@ -30,12 +32,20 @@ describe('share location', () => {
 		cy.get('[data-cy="get-loc-btn"]').click();
 		cy.get('[data-cy="share-loc-btn"]').click();
 		cy.get('@saveToClipboard').should('have.been.called');
-		cb.get('userLocation').then((fakePosition) => {
+		cy.get('@userLocation').then((fakePosition) => {
 			const { latitude, longitude } = fakePosition.coords;
 			cy.get('@saveToClipboard').should(
 				'have.been.calledWithMatch',
 				new RegExp(`${latitude}.*${longitude}.*${encodeURI('Jon Zherka')}`)
 			);
+			cy.get('@storeLocation').should(
+				'have.been.calledWithMatch',
+				/Jon Zherka/,
+				new RegExp(`${latitude}.*${longitude}.*${encodeURI('Jon Zherka')}`)
+			);
 		});
+		cy.get('@storeLocation').should('have.been.called');
+		cy.get('[data-cy="share-loc-btn"]').click();
+		cy.get('@getStoredLocation').should('have.been.called');
 	});
 });
