@@ -27,5 +27,9 @@ describe('share location', () => {
 		cy.get('[data-cy="get-loc-btn"]').click();
 		cy.get('[data-cy="share-loc-btn"]').click();
 		cy.get('@saveToClipboard').should('have.been.called');
+		cy.get('@saveToClipboard').should(
+			'have.been.calledWithMatch',
+			new RegExp(`${37.33}.*${65.33}.*${encodeURI('Jon Zherka')}`)
+		);
 	});
 });
