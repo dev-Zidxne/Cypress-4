@@ -2,6 +2,7 @@
 
 describe('share location', () => {
 	beforeEach(() => {
+		cy.clock();
 		cy.fixture('user-location.json').as('userLocation');
 		cy.visit('/').then((win) => {
 			cy.get('@userLocation').then((fakePosition) => {
@@ -49,6 +50,7 @@ describe('share location', () => {
 		cy.get('@getStoredLocation').should('have.been.called');
 		cy.get('[data-cy="info-message"]').should('be.visible');
 		cy.get('[data-cy="info-message"]').should('have.class', 'visible');
+		cy.tick(2000);
 		cy.get('[data-cy="info-message"]').should('not.be.visible');
 	});
 });
